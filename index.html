@@ -224,5 +224,39 @@ const observer=new IntersectionObserver(entries=>{
 sections.forEach(sec=>observer.observe(sec))
 </script>
 
+<script>
+// ===== SCROLL CON RUEDA (ya lo tenías) =====
+container.addEventListener('wheel', (evt) => {
+  evt.preventDefault();
+  container.scrollLeft += evt.deltaY;
+}, { passive:false });
+
+
+// ===== NUEVO: SWIPE VERTICAL -> SCROLL HORIZONTAL (modo TikTok) =====
+let startY = 0;
+let startX = 0;
+let isTouching = false;
+
+container.addEventListener("touchstart", (e) => {
+  startY = e.touches[0].clientY;
+  startX = container.scrollLeft;
+  isTouching = true;
+}, { passive:true });
+
+container.addEventListener("touchmove", (e) => {
+  if (!isTouching) return;
+
+  const currentY = e.touches[0].clientY;
+  const deltaY = startY - currentY;
+
+  // mover horizontalmente según el swipe vertical
+  container.scrollLeft = startX + deltaY;
+}, { passive:true });
+
+container.addEventListener("touchend", () => {
+  isTouching = false;
+});
+</script>
+
 </body>
 </html>
