@@ -16,15 +16,18 @@ body{
 
 .container{
   height:100vh;
-  overflow-y:scroll;
-  scroll-snap-type:y mandatory;
+  width:100vw;
+  overflow-x:scroll;
+  overflow-y:hidden;
+  scroll-snap-type:x mandatory;
   scrollbar-width:none;
+  display:flex;              /* CLAVE */
 }
 .container::-webkit-scrollbar{display:none}
 
 .section{
+  min-width:100vw;           /* CLAVE */
   height:100vh;
-  width:100%;
   padding:4vh 0;
   scroll-snap-align:start;
   display:flex;
@@ -163,7 +166,7 @@ body{
 
   <div class="section s1">
     <p id="irasshaimase">いらっしゃいませ!</p>
-    <p id="scrollIndication">V</p>
+    <p id="scrollIndication">></p>
   </div>
 
   <div class="section s2">
