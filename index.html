@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TikTok Scroll</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:Arial, sans-serif;
+  overflow:hidden;
+  font-size:clamp(14px,1.1vw,18px);
+}
+
+.container{
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  scrollbar-width:none;
+}
+.container::-webkit-scrollbar{display:none}
+
+.section{
+  height:100vh;
+  width:100%;
+  padding:4vh 0;
+  scroll-snap-align:start;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  flex-direction:column;
+  position:relative;
+  color:white;
+  font-weight:bold;
+  background-size:cover;
+  background-position:center;
+}
+
+.s1{background-image:url("./img/irasshaimase.png");
+  justify-content: center;
+  }
+.s2{background-image:url("./img/ramenBG.png")}
+.s3{background:#51cf66}
+.s4{background:#ffd43b}
+.s5{background:#845ef7}
+
+/* Pills */
+.pills{
+  position:fixed;
+  top:clamp(12px,2vh,30px);
+  left:clamp(12px,2vw,30px);
+  display:flex;
+  flex-direction:column;
+  gap:clamp(3px,0.5vh,8px);
+  z-index:1000;
+}
+.pill{
+  width:clamp(6px,0.6vw,8px);
+  height:clamp(14px,2.5vh,28px);
+  border-radius:4px;
+  background:white;
+  transition:.3s;
+}
+.pill.active{background:#d22728}
+
+/* HERO */
+#irasshaimase{
+  writing-mode:vertical-rl;
+  text-orientation:upright;
+  font-family:"セイビオオキド", sans-serif;
+  font-size:clamp(42px,8vh,120px);
+}
+#scrollIndication{
+  font-size:clamp(28px,6vh,80px);
+  opacity:.36;
+}
+
+/* PRODUCT */
+.productIMG{
+  width:clamp(260px,70vw,520px);
+  max-height:40vh;
+  object-fit:contain;
+}
+
+.productName{
+  font-size:clamp(28px,6vw,64px);
+  margin-bottom:clamp(10px,2vh,30px);
+  margin-top:clamp(6px,1vh,16px);
+  text-align:center;
+}
+
+.productDescription{
+  font-size:clamp(14px,2.4vw,22px);
+  width:min(700px,80%);
+  text-align:center;
+  line-height:1.5;
+}
+
+.allergies{
+  width:min(700px,85%);
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:clamp(14px,3vw,30px);
+  margin-top:clamp(12px,3vh,30px);
+}
+
+.allergy{display:flex;align-items:center;gap:10px}
+.allergyIMG{width:clamp(26px,5vw,55px)}
+.allergyTXT{font-size:clamp(10px,1.4vw,14px)}
+
+.addProductButton{
+  position:absolute;
+  bottom:clamp(20px,4vh,40px);
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:clamp(12px,2vw,22px);
+  background:white;
+  border-radius:18px;
+  font-size:clamp(10px,2.5vw,28px);
+}
+
+.productState{
+  background:#d22728;
+  padding:clamp(10px,1.8vh,16px) clamp(14px,2vw,22px);
+  border-radius:12px;
+  color:white;
+}
+
+.productPrice{
+  color:#d22728;
+  font-weight:bold;
+  margin-right: 15px;
+}
+
+/* RED BOX */
+#redBox{
+  position:fixed;
+  top:0;
+  right:clamp(12px,2vw,30px);
+  height:clamp(60px,6vh,60px);
+  width:clamp(50px,4vw,50px);
+  background:#d22728;
+}
+</style>
+</head>
+
+<body>
+
+<div class="pills">
+  <div class="pill active"></div>
+  <div class="pill"></div>
+  <div class="pill"></div>
+  <div class="pill"></div>
+  <div class="pill"></div>
+</div>
+
+<div class="container">
+
+  <div class="section s1">
+    <p id="irasshaimase">いらっしゃいませ!</p>
+    <p id="scrollIndication">V</p>
+  </div>
+
+  <div class="section s2">
+    <img class="productIMG" src="./img/ramenCurry.png">
+    <p class="productName">CURRY RAMEN</p>
+    <p class="productDescription">
+      Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada.
+      Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas
+      y medio huevo marinado con la yema cremosa.
+    </p>
+
+    <div class="allergies">
+      <span class="allergy">
+        <img class="allergyIMG" src="./img/ramenCurry.png">
+        <p class="allergyTXT">GLUTEN</p>
+      </span>
+      <span class="allergy">
+        <img class="allergyIMG" src="./img/ramenCurry.png">
+        <p class="allergyTXT">SOJA</p>
+      </span>
+      <span class="allergy">
+        <img class="allergyIMG" src="./img/ramenCurry.png">
+        <p class="allergyTXT">HUEVO</p>
+      </span>
+    </div>
+
+    <div class="addProductButton">
+      <span class="productState">AÑADIR AL PEDIDO</span>
+      <span class="productPrice">13€</span>
+    </div>
+  </div>
+
+  <div class="section s3">Contenido 3</div>
+  <div class="section s4">Contenido 4</div>
+  <div class="section s5">Contenido 5</div>
+
+  <div id="redBox"></div>
+
+</div>
+
+<script>
+const sections=document.querySelectorAll('.section')
+const pills=document.querySelectorAll('.pill')
+
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const index=[...sections].indexOf(entry.target)
+      pills.forEach(p=>p.classList.remove('active'))
+      if(pills[index])pills[index].classList.add('active')
+    }
+  })
+},{threshold:0.6})
+
+sections.forEach(sec=>observer.observe(sec))
+</script>
+
+</body>
+</html>
