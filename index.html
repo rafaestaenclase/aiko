@@ -15,7 +15,7 @@ body{
 }
 
 .container{
-  height:100vh;
+  height:100dvh;
   width:100vw;
   overflow-x:scroll;
   overflow-y:hidden;
@@ -27,8 +27,8 @@ body{
 
 .section{
   min-width:100vw;           /* CLAVE */
-  height:100vh;
-  padding:4vh 0;
+  height:100dvh;
+  padding:4dvh 0;
   scroll-snap-align:start;
   display:flex;
   align-items:center;
@@ -52,16 +52,16 @@ body{
 /* Pills */
 .pills{
   position:fixed;
-  top:clamp(12px,2vh,30px);
+  top:clamp(12px,2dvh,30px);
   left:clamp(12px,2vw,30px);
   display:flex;
   flex-direction:column;
-  gap:clamp(3px,0.5vh,8px);
+  gap:clamp(3px,0.5dvh,8px);
   z-index:1000;
 }
 .pill{
   width:clamp(6px,0.6vw,8px);
-  height:clamp(14px,2.5vh,28px);
+  height:clamp(14px,2.5dvh,28px);
   border-radius:4px;
   background:white;
   transition:.3s;
@@ -73,24 +73,24 @@ body{
   writing-mode:vertical-rl;
   text-orientation:upright;
   font-family:"セイビオオキド", sans-serif;
-  font-size:clamp(42px,8vh,120px);
+  font-size:clamp(42px,8dvh,120px);
 }
 #scrollIndication{
-  font-size:clamp(28px,6vh,80px);
+  font-size:clamp(28px,6dvh,80px);
   opacity:.36;
 }
 
 /* PRODUCT */
 .productIMG{
   width:clamp(260px,70vw,520px);
-  max-height:40vh;
+  max-height:40dvh;
   object-fit:contain;
 }
 
 .productName{
   font-size:clamp(28px,6vw,64px);
-  margin-bottom:clamp(10px,2vh,30px);
-  margin-top:clamp(6px,1vh,16px);
+  margin-bottom:clamp(10px,2dvh,30px);
+  margin-top:clamp(6px,1dvh,16px);
   text-align:center;
 }
 
@@ -107,7 +107,7 @@ body{
   flex-wrap:wrap;
   justify-content:center;
   gap:clamp(14px,3vw,30px);
-  margin-top:clamp(12px,3vh,30px);
+  margin-top:clamp(12px,3dvh,30px);
 }
 
 .allergy{display:flex;align-items:center;gap:10px}
@@ -116,7 +116,7 @@ body{
 
 .addProductButton{
   position:absolute;
-  bottom:clamp(20px,4vh,40px);
+  bottom:clamp(20px,4dvh,40px);
   left:50%;
   transform:translateX(-50%);
   display:flex;
@@ -129,7 +129,7 @@ body{
 
 .productState{
   background:#d22728;
-  padding:clamp(10px,1.8vh,16px) clamp(14px,2vw,22px);
+  padding:clamp(10px,1.8dvh,16px) clamp(14px,2vw,22px);
   border-radius:12px;
   color:white;
 }
@@ -145,7 +145,7 @@ body{
   position:fixed;
   top:0;
   right:clamp(12px,2vw,30px);
-  height:clamp(60px,6vh,60px);
+  height:clamp(60px,6dvh,60px);
   width:clamp(50px,4vw,50px);
   background:#d22728;
 }
@@ -222,40 +222,6 @@ const observer=new IntersectionObserver(entries=>{
 },{threshold:0.6})
 
 sections.forEach(sec=>observer.observe(sec))
-</script>
-
-<script>
-// ===== SCROLL CON RUEDA (ya lo tenías) =====
-container.addEventListener('wheel', (evt) => {
-  evt.preventDefault();
-  container.scrollLeft += evt.deltaY;
-}, { passive:false });
-
-
-// ===== NUEVO: SWIPE VERTICAL -> SCROLL HORIZONTAL (modo TikTok) =====
-let startY = 0;
-let startX = 0;
-let isTouching = false;
-
-container.addEventListener("touchstart", (e) => {
-  startY = e.touches[0].clientY;
-  startX = container.scrollLeft;
-  isTouching = true;
-}, { passive:true });
-
-container.addEventListener("touchmove", (e) => {
-  if (!isTouching) return;
-
-  const currentY = e.touches[0].clientY;
-  const deltaY = startY - currentY;
-
-  // mover horizontalmente según el swipe vertical
-  container.scrollLeft = startX + deltaY;
-}, { passive:true });
-
-container.addEventListener("touchend", () => {
-  isTouching = false;
-});
 </script>
 
 </body>
