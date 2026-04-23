@@ -183,7 +183,16 @@ body{
   height:clamp(60px,6dvh,60px);
   width:clamp(50px,4vw,50px);
   background:#d22728;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+#redBox > img {
+  width: 75%;
+}
+
 </style>
 </head>
 
@@ -193,6 +202,10 @@ body{
   <div class="pill active"></div>
 </div>
 
+<div id="redBox">
+  <img src="./img/logo.png">
+</div>
+
 <div class="container">
 
   <div class="section s1">
@@ -200,7 +213,7 @@ body{
     <p id="scrollIndication">></p>
   </div>
 
-  <div id="redBox"></div>
+  
 
 </div>
 
