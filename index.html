@@ -36,7 +36,7 @@
   font-style: normal;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;pointer-events:none;}
+*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;}
 
 *::-webkit-scrollbar{display:none}
 
@@ -322,6 +322,8 @@ function update() {
 /* CLICK */
 document.addEventListener('click', (e) => {
   if (e.target.closest('.addProductButton')) return
+
+    console.log(e.target.closest('.addProductButton'));
 
   const half = window.innerWidth / 2
 
