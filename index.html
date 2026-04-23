@@ -41,6 +41,7 @@
 *::-webkit-scrollbar{display:none}
 
 body{
+  background: #2e2e2f;
   font-family:Arial, sans-serif;
   overflow:hidden;
   font-size:clamp(14px,1.1vw,18px);
@@ -294,6 +295,7 @@ document.addEventListener('click', (e) => {
   const half = window.innerWidth / 2
 
   if (e.clientX > half) {
+    //NO ES UN BUG, TENGO QUE TENER UNO MAS PARA LA PORTADA, NO ramenData.length-1 porque si no no aparece la portada
     index = Math.min(index + 1, ramenData.length)
   } else {
     index = Math.max(index - 1, 0)
