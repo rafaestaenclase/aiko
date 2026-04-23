@@ -106,10 +106,16 @@ body{
 #irasshaimase{
   writing-mode:vertical-rl;
   text-orientation:upright;
-  font-family: YujiSyuku-Regular;
   font-size: 8dvh;
   font-weight: bold;
+  display: flex;
 }
+
+#irasshaimase * {
+  font-family: YujiSyuku-Regular;
+}
+
+
 #scrollIndication{
   font-size:clamp(28px,6dvh,80px);
   opacity:.36;
@@ -208,6 +214,78 @@ body{
   width: 75%;
 }
 
+
+/* ===== KUROSAWA INTRO ===== */
+
+/* Estado inicial bloqueado */
+body.locked{
+  pointer-events:none;
+}
+
+/* letras estado inicial */
+#irasshaimase span{
+  display:inline-block;
+  opacity:0;
+  transform: translateX(60vw) translateY(-40vh) scale(8) rotate(-20deg);
+  color:#8b0000;
+  filter: blur(8px);
+}
+
+/* activar animación */
+#irasshaimase.animate span{
+  animation: kurosawaEntry 950ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+/* 🎬 ENTRADA DRAMÁTICA */
+@keyframes kurosawaEntry{
+
+  /* aparece desde el vacío */
+  0%{
+    opacity:0;
+    transform: translateX(60vw) translateY(-40vh) scale(8) rotate(-20deg);
+    filter: blur(10px);
+    color:#6b0000;
+  }
+
+  /* golpe fuerte */
+  45%{
+    opacity:1;
+    transform: translateX(-18px) translateY(6px) scale(0.75) rotate(3deg);
+    filter: blur(0);
+    color:#ff1a1a;
+  }
+
+  /* rebote overshoot */
+  65%{
+    transform: translateX(6px) translateY(-2px) scale(1.15) rotate(-2deg);
+    color:#ff3b3b;
+  }
+
+  /* micro vibración tipo sello */
+  75%{ transform: translateX(-3px) rotate(1deg); }
+  80%{ transform: translateX(2px) rotate(-1deg); }
+  85%{ transform: translateX(-2px) rotate(.5deg); }
+  90%{ transform: translateX(1px) rotate(-.5deg); }
+
+  /* encaje final */
+  100%{
+    opacity:1;
+    transform: translateX(0) translateY(0) scale(1) rotate(0);
+    color:white;
+
+    filter: blur(0);
+    will-change: auto;
+  }
+}
+
+
+
+
+
+
+
+
+
 </style>
 </head>
 
@@ -224,11 +302,11 @@ body{
 <div class="container">
 
   <div class="section s1">
-    <p id="irasshaimase">いらっしゃいませ!</p>
+    <p id="irasshaimase">
+      <span>い</span><span>ら</span><span>っ</span><span>し</span><span>ゃ</span><span>い</span><span>ま</span><span>せ</span><span>!</span>
+    </p>
     <p id="scrollIndication">></p>
   </div>
-
-  
 
 </div>
 
@@ -264,6 +342,9 @@ const container = document.querySelector('.container')
 const pillsContainer = document.querySelector('.pills')
 
 let index = 0
+
+let introFinished = false
+document.body.classList.add('locked')
 
 function render() {
 
@@ -321,6 +402,7 @@ function update() {
 
 /* CLICK */
 document.addEventListener('click', (e) => {
+  if (!introFinished) return
   if (e.target.closest('.addProductButton')) return
 
     console.log(e.target.closest('.addProductButton'));
@@ -341,6 +423,7 @@ document.addEventListener('click', (e) => {
 let startX = 0
 
 document.addEventListener('touchstart', (e) => {
+  if (!introFinished) return
   startX = e.touches[0].clientX
 })
 
@@ -360,7 +443,49 @@ document.addEventListener('touchend', (e) => {
 
 render()
 update()
-</script>
+
+
+
+const welcomeSound = new Audio('./sound/irasshaimase.wav')
+welcomeSound.preload = 'auto'
+welcomeSound.volume = 0.9
+let soundPlayed = false
+
+function playWelcomeSound() {
+  if (soundPlayed) return
+  soundPlayed = true
+
+  startIntroAnimation()
+  welcomeSound.play().catch((e)=>{console.log(e);soundPlayed = false;})
+}
+
+// primera interacción válida
+document.addEventListener('click', playWelcomeSound)
+document.addEventListener('touchstart', playWelcomeSound)
+document.addEventListener('pointerdown', playWelcomeSound)
+
+
+function startIntroAnimation(){
+
+  const letters = document.querySelectorAll('#irasshaimase span')
+  const word = document.getElementById('irasshaimase')
+
+  word.classList.add('animate')
+
+  letters.forEach((l,i)=>{
+    l.style.animationDelay = (i * 120) + 'ms'
+  })
+
+  // duración total animacióndocument.addEventListener('click', playWelcomeSound)
+document.addEventListener('touchstart', playWelcomeSound)
+  const totalDuration = letters.length * 120 + 900
+
+  setTimeout(()=>{
+    introFinished = true
+    document.body.classList.remove('locked')
+  }, totalDuration)
+}
+
 </script>
 
 </body>
