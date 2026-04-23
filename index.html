@@ -38,6 +38,8 @@
 
 *{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;}
 
+*::-webkit-scrollbar{display:none}
+
 body{
   font-family:Arial, sans-serif;
   overflow:hidden;
@@ -52,8 +54,6 @@ body{
   transition: transform 0.4s ease;
   will-change: transform;
 }
-
-.container::-webkit-scrollbar{display:none}
 
 .section{
   min-width:100vw;           /* CLAVE */
@@ -272,6 +272,41 @@ document.addEventListener('click', (e) => {
   }
 
   update()
+})
+
+
+
+/* =========================
+   SWIPE (drag dedo)
+========================= */
+let startX = 0
+let isDragging = false
+
+document.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX
+  isDragging = true
+})
+
+document.addEventListener('touchend', (e) => {
+  if (!isDragging) return
+  isDragging = false
+
+  const endX = e.changedTouches[0].clientX
+  const diff = startX - endX
+
+  const threshold = 50 // sensibilidad
+
+  if (Math.abs(diff) > threshold) {
+    if (diff > 0) {
+      // swipe izquierda → siguiente
+      index = Math.min(index + 1, sections.length - 1)
+    } else {
+      // swipe derecha → anterior
+      index = Math.max(index - 1, 0)
+    }
+
+    update()
+  }
 })
 </script>
 </script>
