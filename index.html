@@ -36,7 +36,7 @@
   font-style: normal;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;}
+*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;pointer-events:none;}
 
 *::-webkit-scrollbar{display:none}
 
@@ -70,15 +70,19 @@ body{
   font-weight:bold;
   background-size:cover;
   background-position:center;
+  box-shadow: inset 0 0 0 4px black;
 }
 
-.s1{background-image:url("./img/irasshaimase.png");
+.s1{
+  background-image:
+  radial-gradient(
+    ellipse at center,
+    rgba(0,0,0,0) 60%,
+    rgba(0,0,0,0.6) 120%
+  ),
+  url(./img/irasshaimase.png);
   justify-content: center;
   }
-.s2{background-image:url("./img/ramenBG.png")}
-.s3{background:#51cf66}
-.s4{background:#ffd43b}
-.s5{background:#845ef7}
 
 /* Pills */
 .pills{
@@ -109,6 +113,17 @@ body{
 #scrollIndication{
   font-size:clamp(28px,6dvh,80px);
   opacity:.36;
+  position: absolute;
+  right: 20px;
+  font-family: YujiSyuku-Regular;
+
+  animation: hintMove 1.2s ease-in-out infinite;
+}
+
+@keyframes hintMove {
+  0%   { transform: translateX(0); opacity: .25; }
+  50%  { transform: translateX(10px); opacity: .6; }
+  100% { transform: translateX(0); opacity: .25; }
 }
 
 /* PRODUCT */
@@ -261,7 +276,10 @@ function render() {
     // SECTION
     const section = document.createElement('div')
     section.className = 'section'
-    section.style.backgroundImage = `url(${ramen.background})`
+    section.style.backgroundImage = `
+      radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.75)),
+      url(${ramen.background})
+    `
 
     section.innerHTML = `
       <img class="productIMG" src="${ramen.image}">
