@@ -6,7 +6,37 @@
 <title>TikTok Scroll</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+
+@font-face {
+  font-family: "Permanent Marker";
+  src: url("./fonts/PermanentMarker-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: "Jost-VariableFont_wght";
+  src: url("./fonts/Jost-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "YujiBoku-Regular";
+  src: url("./fonts/YujiBoku-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "YujiSyuku-Regular";
+  src: url("./fonts/YujiSyuku-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;}
 
 body{
   font-family:Arial, sans-serif;
@@ -17,12 +47,12 @@ body{
 .container{
   height:100dvh;
   width:100vw;
-  overflow-x:scroll;
-  overflow-y:hidden;
-  scroll-snap-type:x mandatory;
-  scrollbar-width:none;
-  display:flex;              /* CLAVE */
+  overflow:hidden;
+  display:flex;
+  transition: transform 0.4s ease;
+  will-change: transform;
 }
+
 .container::-webkit-scrollbar{display:none}
 
 .section{
@@ -55,13 +85,12 @@ body{
   top:clamp(12px,2dvh,30px);
   left:clamp(12px,2vw,30px);
   display:flex;
-  flex-direction:column;
   gap:clamp(3px,0.5dvh,8px);
   z-index:1000;
 }
 .pill{
-  width:clamp(6px,0.6vw,8px);
-  height:clamp(14px,2.5dvh,28px);
+  width:clamp(14px,2.5dvh,28px);
+  height:clamp(6px,0.6vw,8px);
   border-radius:4px;
   background:white;
   transition:.3s;
@@ -72,8 +101,9 @@ body{
 #irasshaimase{
   writing-mode:vertical-rl;
   text-orientation:upright;
-  font-family:"セイビオオキド", sans-serif;
+  font-family: YujiSyuku-Regular;
   font-size:clamp(42px,8dvh,120px);
+  font-weight: bold;
 }
 #scrollIndication{
   font-size:clamp(28px,6dvh,80px);
@@ -88,10 +118,12 @@ body{
 }
 
 .productName{
+  font-family: "Permanent Marker";
   font-size:clamp(28px,6vw,64px);
   margin-bottom:clamp(10px,2dvh,30px);
   margin-top:clamp(6px,1dvh,16px);
   text-align:center;
+  font-weight: 100;
 }
 
 .productDescription{
@@ -99,6 +131,8 @@ body{
   width:min(700px,80%);
   text-align:center;
   line-height:1.5;
+  max-height: 35dvh;
+  overflow: scroll;
 }
 
 .allergies{
@@ -116,7 +150,7 @@ body{
 
 .addProductButton{
   position:absolute;
-  bottom:clamp(20px,4dvh,40px);
+  bottom:clamp(30px,7dvh,75px);
   left:50%;
   transform:translateX(-50%);
   display:flex;
@@ -208,20 +242,38 @@ body{
 </div>
 
 <script>
-const sections=document.querySelectorAll('.section')
-const pills=document.querySelectorAll('.pill')
+const container = document.querySelector('.container')
+const sections = document.querySelectorAll('.section')
+const pills = document.querySelectorAll('.pill')
 
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      const index=[...sections].indexOf(entry.target)
-      pills.forEach(p=>p.classList.remove('active'))
-      if(pills[index])pills[index].classList.add('active')
-    }
+let index = 0
+
+function update() {
+  container.scrollTo({
+    left: index * window.innerWidth,
+    behavior: 'smooth'
   })
-},{threshold:0.6})
 
-sections.forEach(sec=>observer.observe(sec))
+  pills.forEach(p => p.classList.remove('active'))
+  if (pills[index]) pills[index].classList.add('active')
+}
+
+// CLICK IZQ / DER (navegación tipo TikTok horizontal)
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.addProductButton')) return
+
+  const clickX = e.clientX
+  const half = window.innerWidth / 2
+
+  if (clickX > half) {
+    index = Math.min(index + 1, sections.length - 1)
+  } else {
+    index = Math.max(index - 1, 0)
+  }
+
+  update()
+})
+</script>
 </script>
 
 </body>
