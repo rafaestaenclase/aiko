@@ -118,12 +118,15 @@ body{
 
 #scrollIndication{
   font-size:clamp(28px,6dvh,80px);
-  opacity:.36;
-  position: absolute;
-  right: 20px;
-  font-family: YujiSyuku-Regular;
+  opacity:0;
+  position:absolute;
+  right:20px;
+  font-family:YujiSyuku-Regular;
 
-  animation: hintMove 1.2s ease-in-out infinite;
+  transform: translateY(20px);
+  transition: 
+    opacity .8s ease,
+    transform .8s cubic-bezier(.2,.9,.2,1);
 }
 
 @keyframes hintMove {
@@ -217,6 +220,34 @@ body{
 
 /* ===== KUROSAWA INTRO ===== */
 
+/* UI oculta durante intro */
+.pills,
+#redBox,
+#scrollIndication{
+  opacity:0;
+  transform: translateY(20px);
+  transition: 
+    opacity .8s ease,
+    transform .8s cubic-bezier(.2,.9,.2,1);
+  pointer-events:none;
+}
+
+/* cuando termina la intro */
+body.uiVisible .pills,
+body.uiVisible #redBox{
+  opacity:1;
+  transform: translateY(0);
+  pointer-events:auto;
+}
+
+
+body.uiVisible #scrollIndication{
+  opacity:.36;
+  transform: translateY(0);
+  pointer-events:auto;
+  animation: hintMove 1.2s ease-in-out infinite;
+}
+
 /* Estado inicial bloqueado */
 body.locked{
   pointer-events:none;
@@ -280,7 +311,67 @@ body.locked{
 
 
 
+/* ===== VIDEO INTRO ===== */
 
+#videoIntro{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  opacity: .4;
+}
+
+/* vídeo full screen */
+#introVideo{
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter: brightness(.85) contrast(1.05);
+  transition: 
+    opacity 1.2s ease,
+    filter 1.2s ease,
+    transform 1.2s ease;
+}
+
+/* texto "pulsa" */
+#enterText{
+  position:relative;
+  z-index:2;
+  color:white;
+  font-size:clamp(18px,2.5vw,28px);
+  letter-spacing:3px;
+  opacity:.85;
+  animation: pulseEnter 1.6s ease-in-out infinite;
+  position: absolute;
+  top: 40vh;
+  transition: 
+    opacity 0.2s ease;
+}
+
+/* respiración del texto */
+@keyframes pulseEnter{
+  0%,100%{ opacity:.4; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.06); }
+}
+
+/* estado cuando se hace click */
+#videoIntro.hide #introVideo{
+  opacity:0 !important;
+}
+
+#videoIntro.hide #enterText{
+  opacity:0 !important;
+}
+
+/* quitar overlay al terminar animación */
+#videoIntro.removed{
+  display:none;
+}
 
 
 
@@ -290,7 +381,14 @@ body.locked{
 </head>
 
 <body>
+<!-- VIDEO INTRO OVERLAY -->
+<div id="videoIntro">
+  <video id="introVideo" autoplay muted loop playsinline>
+    <source src="./img/irasshaimaseBGFILM.mp4" type="video/mp4">
+  </video>
 
+  <div id="enterText">PULSA PARA ENTRAR</div>
+</div>
 <div class="pills">
   <div class="pill active"></div>
 </div>
@@ -451,10 +549,20 @@ welcomeSound.preload = 'auto'
 welcomeSound.volume = 0.9
 let soundPlayed = false
 
+const videoIntro = document.getElementById('videoIntro')
+
 function playWelcomeSound() {
   if (soundPlayed) return
   soundPlayed = true
 
+  /* 🎬 desaparecer video */
+  videoIntro.classList.add('hide')
+
+  setTimeout(()=>{
+    videoIntro.classList.add('removed')
+  },1050)
+
+  /* iniciar intro real */
   startIntroAnimation()
   welcomeSound.play().catch((e)=>{console.log(e);soundPlayed = false;})
 }
@@ -483,6 +591,10 @@ document.addEventListener('touchstart', playWelcomeSound)
   setTimeout(()=>{
     introFinished = true
     document.body.classList.remove('locked')
+
+    /* ✨ APARECE LA UI */
+    document.body.classList.add('uiVisible')
+
   }, totalDuration)
 }
 
