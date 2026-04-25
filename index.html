@@ -4,601 +4,433 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TikTok Scroll</title>
-
 <style>
 
-@font-face {
-  font-family: "Permanent Marker";
-  src: url("./fonts/PermanentMarker-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
+/* ── FUENTES ── */
+@font-face { font-family: "PermanentMarker"; src: url("./fonts/PermanentMarker-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Jost";           src: url("./fonts/Jost-VariableFont_wght.ttf") format("truetype"); font-weight: 100 900; }
+@font-face { font-family: "YujiSyuku";      src: url("./fonts/YujiSyuku-Regular.ttf")       format("truetype"); }
+
+/* ── RESET ── */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box; sans-serif; font-weight: 100;
 }
+::-webkit-scrollbar { display: none; }
 
-
-@font-face {
-  font-family: "Jost-VariableFont_wght";
-  src: url("./fonts/Jost-VariableFont_wght.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "YujiBoku-Regular";
-  src: url("./fonts/YujiBoku-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "YujiSyuku-Regular";
-  src: url("./fonts/YujiSyuku-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-*{margin:0;padding:0;box-sizing:border-box;font-family: Jost-VariableFont_wght;    font-weight: 100;}
-
-*::-webkit-scrollbar{display:none}
-
-body{
+/* ── BASE ── */
+body {
   background: #2e2e2f;
-  font-family:Arial, sans-serif;
-  overflow:hidden;
-  font-size:clamp(14px,1.1vw,18px);
+  overflow: hidden;
+  font-size: clamp(14px, 1.1vw, 18px);
 }
+body.locked { pointer-events: none; }
 
-.container{
-  height:100dvh;
-  width:100vw;
-  overflow:hidden;
-  display:flex;
-  transition: transform 0.4s ease;
+/* ── SLIDER ── */
+.container {
+  display: flex;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  transition: transform .4s ease;
   will-change: transform;
 }
 
-.section{
-  min-width:100vw;           /* CLAVE */
-  height:100dvh;
-  padding:8dvh 0;
-  scroll-snap-align:start;
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  flex-direction:column;
-  position:relative;
-  color:white;
-  font-weight:bold;
-  background-size:cover;
-  background-position:center;
+/* ── SECCIÓN GENÉRICA ── */
+.section {
+  min-width: 100vw;
+  height: 100dvh;
+  padding: 8dvh 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  position: relative;
+  color: white;
+  font-weight: bold;
+  background-size: cover;
+  background-position: center;
   box-shadow: inset 0 0 0 4px black;
 }
 
-.s1{
-  background-image:
-  radial-gradient(
-    ellipse at center,
-    rgba(0,0,0,0) 60%,
-    rgba(0,0,0,0.6) 120%
-  ),
-  url(./img/irasshaimase.png);
+/* ── PORTADA ── */
+.s1 {
   justify-content: center;
-  }
-
-/* Pills */
-.pills{
-  position:fixed;
-  top:clamp(12px,2dvh,30px);
-  left:clamp(12px,2vw,30px);
-  display:flex;
-  gap:clamp(3px,0.5dvh,8px);
-  z-index:1000;
+  background-image:
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,.6) 120%),
+    url(./img/irasshaimase.png);
 }
-.pill{
-  width:clamp(14px,2.5dvh,28px);
-  height:clamp(6px,0.6vw,8px);
-  border-radius:4px;
-  background:white;
-  transition:.3s;
-}
-.pill.active{background:#d22728}
 
-/* HERO */
-#irasshaimase{
-  writing-mode:vertical-rl;
-  text-orientation:upright;
-  font-size: 8dvh;
-  font-weight: bold;
+/* ── PILLS (indicador de slide) ── */
+.pills {
+  position: fixed;
+  top: clamp(12px, 2dvh, 30px);
+  left: clamp(12px, 2vw, 30px);
   display: flex;
+  gap: clamp(3px, .5dvh, 8px);
+  z-index: 1000;
 }
-
-#irasshaimase * {
-  font-family: YujiSyuku-Regular;
+.pill {
+  width: clamp(14px, 2.5dvh, 28px);
+  height: clamp(6px, .6vw, 8px);
+  border-radius: 4px;
+  background: white;
+  transition: background .3s;
 }
+.pill.active { background: #d22728; }
 
-
-#scrollIndication{
-  font-size:clamp(28px,6dvh,80px);
-  opacity:0;
-  position:absolute;
-  right:20px;
-  font-family:YujiSyuku-Regular;
-
-  transform: translateY(20px);
-  transition: 
-    opacity .8s ease,
-    transform .8s cubic-bezier(.2,.9,.2,1);
-}
-
-@keyframes hintMove {
-  0%   { transform: translateX(0); opacity: .25; }
-  50%  { transform: translateX(10px); opacity: .6; }
-  100% { transform: translateX(0); opacity: .25; }
-}
-
-/* PRODUCT */
-.productIMG{
-  width:clamp(260px,70vw,520px);
-  max-height:40dvh;
-  object-fit:contain;
-}
-
-.productName{
-  font-family: "Permanent Marker";
-  font-size:clamp(28px,6vw,64px);
-  margin-bottom:clamp(10px,2dvh,30px);
-  margin-top:clamp(6px,1dvh,16px);
-  text-align:center;
-  font-weight: 100;
-}
-
-.productDescription{
-  font-size:clamp(14px,2.4vw,22px);
-  width:min(700px,80%);
-  text-align:center;
-  line-height:1.5;
-  max-height: 35dvh;
-  overflow: scroll;
-}
-
-.allergies{
-  width:min(700px,85%);
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:clamp(14px,3vw,30px);
-  margin-top:clamp(12px,3dvh,30px);
-}
-
-.allergy{display:flex;align-items:center;gap:10px}
-.allergyIMG{width:clamp(26px,5vw,55px)}
-.allergyTXT{font-size:clamp(10px,1.4vw,14px)}
-
-.addProductButton{
-  position:absolute;
-  bottom:clamp(30px,7dvh,75px);
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  align-items:center;
-  gap:clamp(12px,2vw,22px);
-  background:white;
-  border-radius:18px;
-  font-size:clamp(10px,2.5vw,28px);
-}
-
-.productState{
-  background:#d22728;
-  padding:clamp(10px,1.8dvh,16px) clamp(14px,2vw,22px);
-  border-radius:12px;
-  color:white;
-}
-
-.productPrice{
-  color:#d22728;
-  font-weight:bold;
-  margin-right: 15px;
-}
-
-/* RED BOX */
-#redBox{
-  position:fixed;
-  top:0;
-  right:clamp(12px,2vw,30px);
-  height:clamp(60px,6dvh,60px);
-  width:clamp(50px,4vw,50px);
-  background:#d22728;
+/* ── LOGO ── */
+#redBox {
+  position: fixed;
+  top: 0; right: clamp(12px, 2vw, 30px);
+  width: clamp(50px, 4vw, 50px);
+  height: clamp(60px, 6dvh, 60px);
+  background: #d22728;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+#redBox img { width: 75%; }
 
-#redBox > img {
-  width: 75%;
+/* ── IRASSHAIMASE (texto portada) ── */
+#irasshaimase {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 8dvh;
+  font-weight: bold;
+  display: flex;
+  font-family: YujiSyuku !important;
 }
-
-
-/* ===== KUROSAWA INTRO ===== */
-
-/* UI oculta durante intro */
-.pills,
-#redBox,
-#scrollIndication{
-  opacity:0;
-  transform: translateY(20px);
-  transition: 
-    opacity .8s ease,
-    transform .8s cubic-bezier(.2,.9,.2,1);
-  pointer-events:none;
-}
-
-/* cuando termina la intro */
-body.uiVisible .pills,
-body.uiVisible #redBox{
-  opacity:1;
-  transform: translateY(0);
-  pointer-events:auto;
-}
-
-
-body.uiVisible #scrollIndication{
-  opacity:.36;
-  transform: translateY(0);
-  pointer-events:auto;
-  animation: hintMove 1.2s ease-in-out infinite;
-}
-
-/* Estado inicial bloqueado */
-body.locked{
-  pointer-events:none;
-}
-
-/* letras estado inicial */
-#irasshaimase span{
-  display:inline-block;
-  opacity:0;
+#irasshaimase span {
+  display: inline-block;
+  opacity: 0;
   transform: translateX(60vw) translateY(-40vh) scale(8) rotate(-20deg);
-  color:#8b0000;
+  color: #8b0000;
   filter: blur(8px);
 }
-
-/* activar animación */
-#irasshaimase.animate span{
+#irasshaimase.animate span {
   animation: kurosawaEntry 950ms cubic-bezier(.2,.9,.2,1) forwards;
 }
 
-/* 🎬 ENTRADA DRAMÁTICA */
-@keyframes kurosawaEntry{
-
-  /* aparece desde el vacío */
-  0%{
-    opacity:0;
-    transform: translateX(60vw) translateY(-40vh) scale(8) rotate(-20deg);
-    filter: blur(10px);
-    color:#6b0000;
-  }
-
-  /* golpe fuerte */
-  45%{
-    opacity:1;
-    transform: translateX(-18px) translateY(6px) scale(0.75) rotate(3deg);
-    filter: blur(0);
-    color:#ff1a1a;
-  }
-
-  /* rebote overshoot */
-  65%{
-    transform: translateX(6px) translateY(-2px) scale(1.15) rotate(-2deg);
-    color:#ff3b3b;
-  }
-
-  /* micro vibración tipo sello */
-  75%{ transform: translateX(-3px) rotate(1deg); }
-  80%{ transform: translateX(2px) rotate(-1deg); }
-  85%{ transform: translateX(-2px) rotate(.5deg); }
-  90%{ transform: translateX(1px) rotate(-.5deg); }
-
-  /* encaje final */
-  100%{
-    opacity:1;
-    transform: translateX(0) translateY(0) scale(1) rotate(0);
-    color:white;
-
-    filter: blur(0);
-    will-change: auto;
-  }
+/* ── FLECHA SCROLL ── */
+#scrollIndication {
+  font-size: clamp(28px, 6dvh, 80px);
+  position: absolute;
+  right: 20px;
+  font-family: YujiSyuku;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .8s ease, transform .8s cubic-bezier(.2,.9,.2,1);
 }
 
+/* ── UI: oculta hasta que termina la intro ── */
+.pills, #redBox, #scrollIndication {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .8s ease, transform .8s cubic-bezier(.2,.9,.2,1);
+  pointer-events: none;
+}
+body.uiVisible .pills,
+body.uiVisible #redBox {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+body.uiVisible #scrollIndication {
+  opacity: .36; transform: translateY(0); pointer-events: auto;
+  animation: hintMove 1.2s ease-in-out infinite;
+}
 
+/* ── PRODUCTO ── */
+.productIMG {
+  width: clamp(260px, 70vw, 520px);
+  max-height: 40dvh;
+  object-fit: contain;
+}
+.productName {
+  font-family: PermanentMarker;
+  font-size: clamp(28px, 6vw, 64px);
+  margin: clamp(6px, 1dvh, 16px) 0 clamp(10px, 2dvh, 30px);
+  text-align: center;
+  font-weight: 100;
+}
+.productDescription {
+  font-size: clamp(14px, 2.4vw, 22px);
+  width: min(700px, 80%);
+  text-align: center;
+  line-height: 1.5;
+  max-height: 35dvh;
+  overflow: scroll;
+}
+.allergies {
+  width: min(700px, 85%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 3vw, 30px);
+  margin-top: clamp(12px, 3dvh, 30px);
+}
+.allergy { display: flex; align-items: center; gap: 10px; }
+.allergyIMG { width: clamp(26px, 5vw, 55px); }
+.allergyTXT { font-size: clamp(10px, 1.4vw, 14px); }
 
-/* ===== VIDEO INTRO ===== */
+.addProductButton {
+  position: absolute;
+  bottom: clamp(30px, 7dvh, 75px);
+  left: 50%; transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  background: white;
+  border-radius: 18px;
+  font-size: clamp(10px, 2.5vw, 28px);
+}
+.productState {
+  background: #d22728;
+  padding: clamp(10px, 1.8dvh, 16px) clamp(14px, 2vw, 22px);
+  border-radius: 12px;
+  color: white;
+}
+.productPrice { color: #d22728; font-weight: bold; margin-right: 15px; }
 
-#videoIntro{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:transparent;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+/* ── INTRO VIDEO ── */
+#videoIntro {
+  position: fixed;
+  inset: 0; z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: .4;
 }
-
-/* vídeo full screen */
-#introVideo{
-  position:absolute;
-  width:100%;
-  height:100%;
-  object-fit:cover;
+#introVideo {
+  position: absolute;
+  inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
   filter: brightness(.85) contrast(1.05);
-  transition: 
-    opacity 1.2s ease,
-    filter 1.2s ease,
-    transform 1.2s ease;
+  transition: opacity 1.2s ease;
 }
-
-/* texto "pulsa" */
-#enterText{
-  position:relative;
-  z-index:2;
-  color:white;
-  font-size:clamp(18px,2.5vw,28px);
-  letter-spacing:3px;
-  opacity:.85;
-  animation: pulseEnter 1.6s ease-in-out infinite;
+#enterWrapper {
   position: absolute;
   top: 40vh;
-  transition: 
-    opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  z-index: 2;
+}
+#loaderCircle {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.25);
+  border-top: 3px solid #d22728;
+  animation: spin 1s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(210,39,40,.6));
+}
+#enterText {
+  position: relative; z-index: 2;
+  color: white;
+  font-size: clamp(18px, 2.5vw, 28px);
+  letter-spacing: 4px;
+  opacity: .85;
+  font-family: YujiSyuku;
+  white-space: nowrap;
+  transition: opacity .4s ease, transform .4s ease;
 }
 
-/* respiración del texto */
-@keyframes pulseEnter{
-  0%,100%{ opacity:.4; transform:scale(1); }
-  50%{ opacity:1; transform:scale(1.06); }
+/* intro al hacer click */
+#videoIntro.hide #introVideo,
+#videoIntro.hide #enterText { opacity: 0 !important; }
+#videoIntro.removed { display: none; }
+
+/* ── KEYFRAMES ── */
+@keyframes kurosawaEntry {
+  0%   { opacity: 0; transform: translateX(60vw) translateY(-40vh) scale(8) rotate(-20deg); filter: blur(10px); color: #6b0000; }
+  45%  { opacity: 1; transform: translateX(-18px) translateY(6px) scale(.75) rotate(3deg);  filter: blur(0);   color: #ff1a1a; }
+  65%  { transform: translateX(6px) translateY(-2px) scale(1.15) rotate(-2deg); color: #ff3b3b; }
+  75%  { transform: translateX(-3px) rotate(1deg); }
+  80%  { transform: translateX(2px) rotate(-1deg); }
+  85%  { transform: translateX(-2px) rotate(.5deg); }
+  90%  { transform: translateX(1px) rotate(-.5deg); }
+  100% { opacity: 1; transform: translateX(0) translateY(0) scale(1) rotate(0); color: white; filter: blur(0); }
 }
 
-/* estado cuando se hace click */
-#videoIntro.hide #introVideo{
-  opacity:0 !important;
+@keyframes hintMove {
+  0%, 100% { transform: translateX(0);   opacity: .25; }
+  50%       { transform: translateX(10px); opacity: .6; }
 }
 
-#videoIntro.hide #enterText{
-  opacity:0 !important;
+@keyframes pulseEnter {
+  0%, 100% { opacity: .4; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.06); }
 }
 
-/* quitar overlay al terminar animación */
-#videoIntro.removed{
-  display:none;
-}
-
-
-
-
+@keyframes spin { to { transform: rotate(360deg); } }
 
 </style>
 </head>
 
-<body>
-<!-- VIDEO INTRO OVERLAY -->
+<body class="locked">
+
+<!-- ── INTRO VIDEO ── -->
 <div id="videoIntro">
   <video id="introVideo" autoplay muted loop playsinline>
     <source src="./img/irasshaimaseBGFILM.mp4" type="video/mp4">
   </video>
-
-  <div id="enterText">PULSA PARA ENTRAR</div>
-</div>
-<div class="pills">
-  <div class="pill active"></div>
-</div>
-
-<div id="redBox">
-  <img src="./img/logo.png">
+  <div id="enterWrapper">
+    <div id="loaderCircle"></div>
+    <div id="enterText"></div>
+  </div>
 </div>
 
+<!-- ── UI PERMANENTE ── -->
+<div class="pills"><div class="pill active"></div></div>
+<div id="redBox"><img src="./img/logo.png"></div>
+
+<!-- ── SLIDER ── -->
 <div class="container">
-
   <div class="section s1">
     <p id="irasshaimase">
       <span>い</span><span>ら</span><span>っ</span><span>し</span><span>ゃ</span><span>い</span><span>ま</span><span>せ</span><span>!</span>
     </p>
     <p id="scrollIndication">></p>
   </div>
-
 </div>
 
-
 <script>
+/* ── DATOS ── */
 const ramenData = [
   {
-    id: 1,
     name: "CURRY RAMEN",
     background: "./img/ramenBG.png",
     image: "./img/ramenCurry.png",
-    description:
-      "Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada. Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas y medio huevo marinado con la yema cremosa.",
+    description: "Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada. Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas y medio huevo marinado con la yema cremosa.",
     allergens: ["GLUTEN", "SOJA", "HUEVO"],
     price: 13
   },
   {
-    id: 2,
     name: "SPICY MISO RAMEN",
     background: "./img/ramenBG.png",
     image: "./img/ramenCurry.png",
-    description:
-      "Ramen de miso picante con un caldo intenso, toque de chile fermentado, ajo y miso rojo. Acompañado de cerdo chashu, brotes de bambú y cebolla fresca.",
+    description: "Ramen de miso picante con un caldo intenso, toque de chile fermentado, ajo y miso rojo. Acompañado de cerdo chashu, brotes de bambú y cebolla fresca.",
     allergens: ["GLUTEN", "SOJA"],
     price: 14
   }
 ]
-</script>
 
-
-<script>
-const container = document.querySelector('.container')
-const pillsContainer = document.querySelector('.pills')
-
-let index = 0
-
+/* ── ESTADO ── */
+const container       = document.querySelector('.container')
+const pillsContainer  = document.querySelector('.pills')
+let index         = 0
 let introFinished = false
-document.body.classList.add('locked')
+let pageLoaded    = false
 
+/* ── CONSTRUIR SLIDES ── */
 function render() {
+  ramenData.forEach(ramen => {
 
-  ramenData.forEach((ramen, i) => {
-
+    // Pill
     const pill = document.createElement('div')
     pill.className = 'pill'
-    if (i === 0) pill.classList.add('active')
+    pillsContainer.appendChild(pill)
 
-    // SECTION
+    // Section
     const section = document.createElement('div')
     section.className = 'section'
     section.style.backgroundImage = `
-      radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.75)),
-      url(${ramen.background})
-    `
+      radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.75)),
+      url(${ramen.background})`
 
     section.innerHTML = `
-      <img class="productIMG" src="${ramen.image}">
+      <img class="productIMG" src="${ramen.image}" alt="${ramen.name}">
       <p class="productName">${ramen.name}</p>
       <p class="productDescription">${ramen.description}</p>
-
       <div class="allergies">
         ${ramen.allergens.map(a => `
           <span class="allergy">
-            <img class="allergyIMG" src="${ramen.image}">
+            <img class="allergyIMG" src="${ramen.image}" alt="${a}">
             <p class="allergyTXT">${a}</p>
-          </span>
-        `).join('')}
+          </span>`).join('')}
       </div>
-
       <div class="addProductButton">
         <span class="productState">AÑADIR AL PEDIDO</span>
         <span class="productPrice">${ramen.price}€</span>
-      </div>
-    `
+      </div>`
 
     container.appendChild(section)
-
-    // PILL
-    pillsContainer.appendChild(pill)
   })
 }
 
-function update() {
-  container.scrollTo({
-    left: index * window.innerWidth,
-    behavior: 'smooth'
-  })
-
-  document.querySelectorAll('.pill').forEach((p, i) => {
-    p.classList.toggle('active', i === index)
-  })
+/* ── NAVEGAR AL SLIDE index ── */
+function goTo(newIndex) {
+  // +1 porque el slide 0 es la portada
+  index = Math.max(0, Math.min(newIndex, ramenData.length))
+  container.scrollTo({ left: index * window.innerWidth, behavior: 'smooth' })
+  document.querySelectorAll('.pill').forEach((p, i) => p.classList.toggle('active', i === index))
 }
 
-/* CLICK */
-document.addEventListener('click', (e) => {
+/* ── NAVEGACIÓN: CLICK ── */
+document.addEventListener('click', e => {
   if (!introFinished) return
   if (e.target.closest('.addProductButton')) return
-
-    console.log(e.target.closest('.addProductButton'));
-
-  const half = window.innerWidth / 2
-
-  if (e.clientX > half) {
-    //NO ES UN BUG, TENGO QUE TENER UNO MAS PARA LA PORTADA, NO ramenData.length-1 porque si no no aparece la portada
-    index = Math.min(index + 1, ramenData.length)
-  } else {
-    index = Math.max(index - 1, 0)
-  }
-
-  update()
+  goTo(index + (e.clientX > window.innerWidth / 2 ? 1 : -1))
 })
 
-/* SWIPE */
+/* ── NAVEGACIÓN: SWIPE ── */
 let startX = 0
-
-document.addEventListener('touchstart', (e) => {
+document.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
+document.addEventListener('touchend', e => {
   if (!introFinished) return
-  startX = e.touches[0].clientX
-})
-
-document.addEventListener('touchend', (e) => {
   const diff = startX - e.changedTouches[0].clientX
-  const threshold = 50
-
-  if (Math.abs(diff) > threshold) {
-    if (diff > 0) {
-      index = Math.min(index + 1, ramenData.length)
-    } else {
-      index = Math.max(index - 1, 0)
-    }
-    update()
-  }
+  if (Math.abs(diff) > 50) goTo(index + (diff > 0 ? 1 : -1))
 })
 
-render()
-update()
-
-
-
-const welcomeSound = new Audio('./sound/irasshaimase.wav')
-welcomeSound.preload = 'auto'
-welcomeSound.volume = 0.9
-let soundPlayed = false
-
-const videoIntro = document.getElementById('videoIntro')
-
-function playWelcomeSound() {
-  if (soundPlayed) return
-  soundPlayed = true
-
-  /* 🎬 desaparecer video */
-  videoIntro.classList.add('hide')
-
-  setTimeout(()=>{
-    videoIntro.classList.add('removed')
-  },1050)
-
-  /* iniciar intro real */
-  startIntroAnimation()
-  welcomeSound.play().catch((e)=>{console.log(e);soundPlayed = false;})
-}
-
-// primera interacción válida
-document.addEventListener('click', playWelcomeSound)
-document.addEventListener('touchstart', playWelcomeSound)
-document.addEventListener('pointerdown', playWelcomeSound)
-
-
-function startIntroAnimation(){
-
+/* ── INTRO: animación de letras ── */
+function startIntroAnimation() {
   const letters = document.querySelectorAll('#irasshaimase span')
-  const word = document.getElementById('irasshaimase')
+  document.getElementById('irasshaimase').classList.add('animate')
+  letters.forEach((l, i) => l.style.animationDelay = (i * 120) + 'ms')
 
-  word.classList.add('animate')
-
-  letters.forEach((l,i)=>{
-    l.style.animationDelay = (i * 120) + 'ms'
-  })
-
-  // duración total animacióndocument.addEventListener('click', playWelcomeSound)
-document.addEventListener('touchstart', playWelcomeSound)
   const totalDuration = letters.length * 120 + 900
-
-  setTimeout(()=>{
+  setTimeout(() => {
     introFinished = true
     document.body.classList.remove('locked')
-
-    /* ✨ APARECE LA UI */
     document.body.classList.add('uiVisible')
-
   }, totalDuration)
 }
 
-</script>
+/* ── INTRO: sonido + video ── */
+const welcomeSound = new Audio('./sound/irasshaimase.wav')
+welcomeSound.volume = 0.9
+let soundPlayed = false
 
+function playWelcomeSound() {
+  if (!pageLoaded || soundPlayed) return
+  soundPlayed = true
+
+  const videoIntro = document.getElementById('videoIntro')
+  videoIntro.classList.add('hide')
+  setTimeout(() => videoIntro.classList.add('removed'), 1050)
+
+  welcomeSound.play().catch(() => { soundPlayed = false })
+  startIntroAnimation()
+}
+
+// Primera interacción del usuario arranca la intro
+['click', 'touchstart', 'pointerdown'].forEach(ev =>
+  document.addEventListener(ev, playWelcomeSound)
+)
+
+/* ── CARGA COMPLETA ── */
+window.addEventListener('load', () => {
+  pageLoaded = true
+  const loader = document.getElementById('loaderCircle')
+  const text   = document.getElementById('enterText')
+  loader.remove()
+  text.textContent = "PULSA PARA ENTRAR"
+  text.style.animation = "pulseEnter 1.6s ease-in-out infinite"
+})
+
+/* ── INIT ── */
+render()
+goTo(0)
+</script>
 </body>
 </html>
