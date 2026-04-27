@@ -690,6 +690,13 @@ extrasData.forEach(({ category, items }) => {
 function openExtras() {
   extrasSheet.classList.add('open')
   document.querySelectorAll('.addProductButton').forEach(b => b.classList.add('disabled'))
+
+  // 🔥 reset selección
+  document.querySelectorAll('.extraItem.selected')
+    .forEach(el => el.classList.remove('selected'))
+
+  // 🔥 reset scroll arriba
+  extrasContent.scrollTop = 0
 }
 
 function closeExtras() {
