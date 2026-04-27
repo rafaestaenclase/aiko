@@ -13,8 +13,9 @@
 
 /* ── RESET ── */
 *, *::before, *::after {
-  margin: 0; padding: 0; box-sizing: border-box; sans-serif; font-weight: 100;
+  margin: 0; padding: 0; box-sizing: border-box; font-weight: 100;
 }
+* { -webkit-tap-highlight-color: transparent;}
 ::-webkit-scrollbar { display: none; }
 
 /* ── BASE ── */
@@ -99,7 +100,7 @@ body.locked { pointer-events: none; }
   font-size: 8dvh;
   font-weight: bold;
   display: flex;
-  font-family: YujiSyuku !important;
+  font-family: YujiSyuku;
 }
 #irasshaimase span {
   display: inline-block;
@@ -159,6 +160,7 @@ body.uiVisible #scrollIndication {
   line-height: 1.5;
   max-height: 35dvh;
   overflow: scroll;
+  font-family: jost; font-weight: 400
 }
 .allergies {
   width: min(700px, 85%);
@@ -170,7 +172,7 @@ body.uiVisible #scrollIndication {
 }
 .allergy { display: flex; align-items: center; gap: 10px; }
 .allergyIMG { width: clamp(26px, 5vw, 55px); }
-.allergyTXT { font-size: clamp(10px, 1.4vw, 14px); }
+.allergyTXT { font-size: clamp(10px, 1.4vw, 14px);font-family: jost; font-weight: 400 }
 
 .addProductButton {
   position: absolute;
@@ -183,13 +185,188 @@ body.uiVisible #scrollIndication {
   border-radius: 18px;
   font-size: clamp(10px, 2.5vw, 28px);
 }
+.addProductButton.disabled {
+  opacity: .4;
+  pointer-events: none;
+  filter: grayscale(.5);
+  transition: opacity .3s, filter .3s;
+}
 .productState {
   background: #d22728;
   padding: clamp(10px, 1.8dvh, 16px) clamp(14px, 2vw, 22px);
   border-radius: 12px;
   color: white;
+  font-family: jost; font-weight: 400
 }
-.productPrice { color: #d22728; font-weight: bold; margin-right: 15px; }
+.productPrice { color: #d22728; font-weight: bold; margin-right: 15px; font-family: jost; font-weight: 400}
+
+/* ── HOJA DE COMPLEMENTOS ── */
+#extrasSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  pointer-events: none;               /* invisible e inactivo por defecto */
+}
+
+#extrasSheet * {
+  font-family: jost; font-weight: 400;
+}
+
+/* fondo oscuro detrás de la hoja */
+#extrasBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+/* la hoja en sí */
+#extrasPanel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100dvh;
+  overflow: hidden;
+  transform: translateY(100%);        /* empieza fuera de pantalla */
+  transition: transform .4s cubic-bezier(.2,.9,.2,1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* imagen de fondo de la hoja */
+#extrasBG {
+  position: absolute;
+  inset: 0;
+  background: url(./img/extrasBG.png) center/cover no-repeat;
+}
+
+/* overlay oscuro encima de la imagen */
+#extrasBG::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.7));
+}
+
+/* contenido scrolleable */
+#extrasContent {
+  position: relative;         /* encima del ::after del BG */
+  z-index: 1;
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(20px,4dvh,40px) clamp(20px,5vw,50px) 0;
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(210,39,40,.85) transparent;
+}
+
+#extrasPanelText {
+    z-index: 2;
+    color: white;
+    height: 20dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    text-align: right;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+}
+
+#extrasPanelText > * {
+  font-family: jost; font-weight: 400;
+  font-size: 23px;
+}
+
+#extrasPanelText > *:first-child {
+  font-weight: bold;
+}
+
+/* título de cada categoría */
+.extrasCategory {
+  font-family: YujiSyuku;
+  font-size: clamp(13px, 1.6vw, 18px);
+  letter-spacing: 3px;
+  opacity: .6;
+  margin: clamp(16px,3dvh,28px) 0 clamp(8px,1.5dvh,14px);
+  text-transform: uppercase;
+  width: 100%;
+}
+
+/* fila de un extra */
+.extraItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(10px,1.8dvh,16px) 0;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  cursor: pointer;
+  transition: opacity .2s;
+  gap: 12px;
+  width: 50%;
+  flex-direction: column;
+}
+.extraItem:active { opacity: .6; }
+
+.extraLeft  { display: flex; align-items: center; gap: clamp(10px,2vw,18px);    flex-direction: column; }
+.extraIMG { width: 70%; font-size: clamp(22px,3.5vw,36px); }
+.extraName{
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: bold !important;
+    text-transform: uppercase;
+}
+.extraPrice { font-size: clamp(12px,1.6vw,17px); opacity: .7; }
+
+/* checkbox custom */
+.extraCheck {
+  width: clamp(22px,2.8vw,30px);
+  height: clamp(22px,2.8vw,30px);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,.4);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .2s, border-color .2s;
+}
+.extraItem.selected .extraCheck {
+  background: #d22728;
+  border-color: #d22728;
+}
+.extraItem.selected .extraCheck::after {
+  content: '✓';
+  color: white;
+  font-size: clamp(12px,1.5vw,16px);
+  font-weight: bold;
+}
+
+/* ── BOTÓN "Así está bien" (mismo estilo que addProductButton) ── */
+#extrasConfirm {
+  position: relative; z-index: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px,2vw,22px);
+  background: white;
+  border-radius: 18px;
+  font-size: clamp(10px,2.5vw,28px);
+  margin: clamp(16px,3dvh,28px) auto;
+  cursor: pointer;
+  border: none;
+  width: fit-content;
+}
+#extrasConfirm .productState { cursor: pointer; }
+
+/* estado abierto */
+#extrasSheet.open {
+  pointer-events: auto;
+}
+#extrasSheet.open #extrasBackdrop { opacity: 1; }
+#extrasSheet.open #extrasPanel    { transform: translateY(0); }
 
 /* ── INTRO VIDEO ── */
 #videoIntro {
@@ -284,7 +461,25 @@ body.uiVisible #scrollIndication {
 <div class="pills"><div class="pill active"></div></div>
 <div id="redBox"><img src="./img/logo.png"></div>
 
-<!-- ── SLIDER ── -->
+<!-- ── HOJA DE COMPLEMENTOS ── -->
+<div id="extrasSheet">
+  <div id="extrasBackdrop"></div>
+  <div id="extrasPanel">
+    <div id="extrasPanelText">
+      <p>¡Uf! Casi se me olvida...</p>
+      <p>esto te podría ir genial</p>
+    </div>
+    <div id="extrasBG"></div>
+    <div id="extrasContent">
+      <!-- Las categorías se inyectan desde JS -->
+    </div>
+    <button id="extrasConfirm">
+      <span class="productState">ASÍ ESTÁ BIEN</span>
+    </button>
+  </div>
+</div>
+
+
 <div class="container">
   <div class="section s1">
     <p id="irasshaimase">
@@ -369,6 +564,7 @@ function goTo(newIndex) {
 /* ── NAVEGACIÓN: CLICK ── */
 document.addEventListener('click', e => {
   if (!introFinished) return
+  if (extrasOpen()) return
   if (e.target.closest('.addProductButton')) return
   goTo(index + (e.clientX > window.innerWidth / 2 ? 1 : -1))
 })
@@ -378,6 +574,7 @@ let startX = 0
 document.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
 document.addEventListener('touchend', e => {
   if (!introFinished) return
+  if (extrasOpen()) return
   const diff = startX - e.changedTouches[0].clientX
   if (Math.abs(diff) > 50) goTo(index + (diff > 0 ? 1 : -1))
 })
@@ -431,6 +628,90 @@ window.addEventListener('load', () => {
 /* ── INIT ── */
 render()
 goTo(0)
+
+/* ══════════════════════════════════════════
+   HOJA DE COMPLEMENTOS
+   ══════════════════════════════════════════ */
+
+/* Datos de complementos (iguales para todos los ramens) */
+const extrasData = [
+  {
+    category: "🍹 Bebidas",
+    items: [
+      { name: "Ramune",        price: 3,   img: "./img/ramenCurry.png" },
+      { name: "Té matcha",     price: 2.5, img: "./img/ramenCurry.png" },
+      { name: "Cerveza Sapporo", price: 3.5, img: "./img/ramenCurry.png" },
+    ]
+  },
+  {
+    category: "🍮 Postres",
+    items: [
+      { name: "Mochi de fresa",   price: 3,   img: "./img/ramenCurry.png" },
+      { name: "Dorayaki",         price: 2.5, img: "./img/ramenCurry.png" },
+      { name: "Pudding de tofu",  price: 3,   img: "./img/ramenCurry.png" },
+    ]
+  }
+]
+
+const extrasSheet   = document.getElementById('extrasSheet')
+const extrasContent = document.getElementById('extrasContent')
+const extrasConfirm = document.getElementById('extrasConfirm')
+const extrasBackdrop = document.getElementById('extrasBackdrop')
+
+/* Construir el contenido de la hoja una sola vez */
+extrasData.forEach(({ category, items }) => {
+  const catEl = document.createElement('p')
+  catEl.className = 'extrasCategory'
+  catEl.textContent = category
+  extrasContent.appendChild(catEl)
+
+  items.forEach(item => {
+    const row = document.createElement('div')
+    row.className = 'extraItem'
+    row.innerHTML = `
+      <div class="extraLeft">
+        <img src= "${item.img}" class="extraIMG">
+        <span class="extraName">${item.name}</span>
+      </div>
+      <span class="extraPrice">+${item.price.toFixed(2).replace('.',',')}€</span>
+      <div class="extraCheck"></div>`
+
+    // Toggle selección al pulsar la fila
+    row.addEventListener('click', e => {
+      e.stopPropagation()
+      row.classList.toggle('selected')
+    })
+
+    extrasContent.appendChild(row)
+  })
+})
+
+/* Abrir la hoja */
+function openExtras() {
+  extrasSheet.classList.add('open')
+  document.querySelectorAll('.addProductButton').forEach(b => b.classList.add('disabled'))
+}
+
+function closeExtras() {
+  extrasSheet.classList.remove('open')
+  document.querySelectorAll('.addProductButton').forEach(b => b.classList.remove('disabled'))
+  introFinished = false
+  setTimeout(() => { introFinished = true }, 100)
+}
+
+// Cerrar al pulsar el backdrop o el botón de confirmar
+extrasBackdrop.addEventListener('click', closeExtras)
+extrasConfirm.addEventListener('click',  closeExtras)
+
+// Abrir al pulsar cualquier addProductButton
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.addProductButton')
+  if (btn) { e.stopPropagation(); openExtras() }
+})
+
+function extrasOpen() { return extrasSheet.classList.contains('open') }
+
+
 </script>
 </body>
 </html>
