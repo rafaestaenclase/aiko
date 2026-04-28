@@ -929,10 +929,17 @@ function render() {
   })
 }
 
+const slideSound = new Audio('./sound/swipe.wav')  // cambia el nombre al tuyo
+slideSound.volume = 0.2
+
 /* ── NAVEGAR AL SLIDE index ── */
 function goTo(newIndex) {
-  // +1 porque el slide 0 es la portada
-  index = Math.max(0, Math.min(newIndex, ramenData.length))
+  const clamped = Math.max(0, Math.min(newIndex, ramenData.length))
+  if (clamped === index) return  // está en un tope, no hace nada
+
+  index = clamped
+  slideSound.currentTime = 0
+  slideSound.play().catch(() => {})
   container.scrollTo({ left: index * window.innerWidth, behavior: 'smooth' })
   document.querySelectorAll('.pill').forEach((p, i) => p.classList.toggle('active', i === index))
 }
@@ -1033,6 +1040,8 @@ const extrasSheet   = document.getElementById('extrasSheet')
 const extrasContent = document.getElementById('extrasContent')
 const extrasConfirm = document.getElementById('extrasConfirm')
 const extrasBackdrop = document.getElementById('extrasBackdrop')
+const extrasSelectedSound = new Audio('./sound/extraSelected.wav')
+extrasSelectedSound.volume = 0.5
 
 /* Construir el contenido de la hoja una sola vez */
 extrasData.forEach(({ category, items }) => {
@@ -1056,6 +1065,8 @@ extrasData.forEach(({ category, items }) => {
     // Toggle selección al pulsar la fila
     row.addEventListener('click', e => {
       e.stopPropagation()
+      extrasSelectedSound.currentTime = 0
+      extrasSelectedSound.play().catch(() => {})
       row.classList.toggle('selected')
     })
 
@@ -1063,16 +1074,16 @@ extrasData.forEach(({ category, items }) => {
   })
 })
 
+const extrasSound = new Audio('./sound/extras.wav')
+extrasSound.volume = 0.4
+
 /* Abrir la hoja */
 function openExtras() {
+  extrasSound.currentTime = 0
+  extrasSound.play().catch(() => {})
   extrasSheet.classList.add('open')
   document.querySelectorAll('.addProductButton').forEach(b => b.classList.add('disabled'))
-
-  // 🔥 reset selección
-  document.querySelectorAll('.extraItem.selected')
-    .forEach(el => el.classList.remove('selected'))
-
-  // 🔥 reset scroll arriba
+  document.querySelectorAll('.extraItem.selected').forEach(el => el.classList.remove('selected'))
   extrasContent.scrollTop = 0
 }
 
@@ -1306,12 +1317,18 @@ function removeCartItem(el, idx) {
   }, { once: true })
 }
 
+
+const cartSound = new Audio('./sound/cart.wav')
+cartSound.volume = 0.7
+
+
 /* ── Abrir / cerrar el carrito ── */
 function openCart() {
+  cartSound.currentTime = 0
+  cartSound.play().catch(() => {})
   renderCart()
   cartSheet.classList.add('open')
 }
-
 function closeCart() {
   cartSheet.classList.remove('open')
   introFinished = false
