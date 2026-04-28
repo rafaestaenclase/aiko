@@ -481,7 +481,11 @@ body.uiVisible #scrollIndication {
 
 /* micro-bounce al añadir item */
 #cartFAB.bump {
-  animation: fabBump .35s cubic-bezier(.2,.9,.2,1);
+  animation: fabFlash 2s ease, fabBump 2s cubic-bezier(.2,.9,.2,1);
+}
+
+#cartFAB.shake #cartIcon {
+  animation: fabShake 2s cubic-bezier(.2,.9,.2,1);
 }
 
 #cartIcon {
@@ -761,6 +765,25 @@ body.uiVisible #scrollIndication {
 #cartSheet.open { pointer-events: auto; }
 #cartSheet.open #cartBackdrop { opacity: 1; }
 #cartSheet.open #cartPanel    { transform: translateY(0); }
+
+
+
+
+@keyframes fabShake {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-18deg) scale(1.2); }
+  40%  { transform: rotate(16deg) scale(1.2); }
+  60%  { transform: rotate(-12deg); }
+  80%  { transform: rotate(8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes fabFlash {
+  0%, 100% { opacity: 1; }
+  25%       { opacity: 0.4; }
+  50%       { opacity: 1; }
+  75%       { opacity: 0.4; }
+}
 
 </style>
 </head>
@@ -1193,11 +1216,22 @@ function updateFAB() {
   cartFAB.classList.toggle('visible', shouldShow)
 }
 
+
+const fabSound = new Audio('./sound/fabUpdate.wav')
+fabSound.volume = 0.5
+
 /* ── Bump de feedback al añadir ── */
 function bumpFAB() {
-  cartFAB.classList.remove('bump')
-  void cartFAB.offsetWidth  // fuerza reflow para reiniciar la animación
-  cartFAB.classList.add('bump')
+  fabSound.currentTime = 0
+  fabSound.play().catch(() => {})
+
+  cartFAB.classList.remove('bump', 'shake')
+  void cartFAB.offsetWidth  // fuerza reflow
+  cartFAB.classList.add('bump', 'shake')
+
+  cartFAB.addEventListener('animationend', () => {
+    cartFAB.classList.remove('bump', 'shake')
+  }, { once: true })
 }
 
 
