@@ -441,6 +441,327 @@ body.uiVisible #scrollIndication {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+
+/* ── CARRITO FAB ── */
+#cartFAB {
+  position: fixed;
+  bottom: clamp(30px, 7dvh, 75px);
+  right: 0;
+  z-index: 4000;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(12px, 1.8dvh, 16px) clamp(16px, 3vw, 22px);
+
+  background: #d22728;
+  color: white;
+  border: none;
+  border-bottom-left-radius: 18px;
+  border-top-left-radius: 18px;
+  cursor: pointer;
+  font-family: jost;
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 400;
+
+  /* oculto por defecto */
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.2,1);
+  will-change: transform, opacity;
+}
+
+/* visible cuando hay items */
+#cartFAB.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* micro-bounce al añadir item */
+#cartFAB.bump {
+  animation: fabBump .35s cubic-bezier(.2,.9,.2,1);
+}
+
+#cartIcon {
+  width: clamp(18px, 2.5vw, 22px);
+  height: clamp(18px, 2.5vw, 22px);
+  flex-shrink: 0;
+}
+
+#cartBadge {
+  background: white;
+  color: #d22728;
+  border-radius: 50%;
+  width: clamp(20px, 3vw, 26px);
+  height: clamp(20px, 3vw, 26px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(11px, 1.5vw, 13px);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+#cartTotal {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+@keyframes fabBump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* ══════════════════════════════
+   HOJA DEL CARRITO
+   ══════════════════════════════ */
+
+#cartSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;          /* por encima del FAB (4000) y extrasSheet (5000) */
+  pointer-events: none;
+}
+
+#cartSheet * { font-family: jost; font-weight: 400; }
+
+/* backdrop */
+#cartBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+/* panel: entra desde ARRIBA */
+#cartPanel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100dvh;
+  overflow: hidden;
+  transform: translateY(-100%);
+  transition: transform .45s cubic-bezier(.2,.9,.2,1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* fondo imagen igual que extrasSheet */
+#cartBG {
+  position: absolute;
+  inset: 0;
+  background: url(./img/extrasBG.png) center/cover no-repeat;
+}
+#cartBG::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.75), rgba(0,0,0,.5));
+}
+
+/* cabecera fija */
+#cartPanelHeader {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(52px,8dvh,80px) clamp(20px,5vw,50px) clamp(16px,2.5dvh,28px);
+  flex-shrink: 0;
+}
+#cartPanelTitle {
+  font-family: YujiSyuku;
+  font-size: clamp(26px,5vw,42px);
+  color: white;
+  letter-spacing: 2px;
+}
+#cartClose {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  color: white;
+  border-radius: 50%;
+  width: clamp(36px,5vw,46px);
+  height: clamp(36px,5vw,46px);
+  font-size: clamp(14px,2vw,18px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+#cartClose:active { background: rgba(255,255,255,.3); }
+
+/* zona scrolleable de items */
+#cartItemsScroll {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 clamp(20px,5vw,50px) clamp(16px,3dvh,28px);
+  color: white;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(210,39,40,.85) transparent;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px,2dvh,18px);
+}
+
+/* ── CART ITEM ── */
+.cartItem {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px,2vw,20px);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: clamp(12px,2dvh,18px) clamp(14px,2.5vw,22px);
+  transition: opacity .25s, transform .3s;
+}
+.cartItem.removing {
+  opacity: 0;
+  transform: translateX(60px) scale(.95);
+}
+
+.cartItemImg {
+  width: clamp(52px,10vw,72px);
+  height: clamp(52px,10vw,72px);
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(0,0,0,.2);
+}
+
+.cartItemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;         /* evita overflow del flex child */
+}
+.cartItemName {
+  font-family: PermanentMarker;
+  font-size: clamp(14px,2.5vw,20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cartItemExtras {
+  font-size: clamp(10px,1.4vw,13px);
+  opacity: .6;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cartItemPrice {
+  font-size: clamp(14px,2vw,18px);
+  color: #ff6b6b;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+/* botón eliminar */
+.cartItemDelete {
+  background: rgba(210,39,40,.2);
+  border: 1px solid rgba(210,39,40,.4);
+  color: #ff6b6b;
+  border-radius: 10px;
+  width: clamp(36px,5vw,44px);
+  height: clamp(36px,5vw,44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.cartItemDelete:active { background: rgba(210,39,40,.4); }
+.cartItemDelete svg {
+  width: clamp(16px,2.2vw,20px);
+  height: clamp(16px,2.2vw,20px);
+  pointer-events: none;
+}
+
+/* estado vacío */
+#cartEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  opacity: .4;
+  gap: 12px;
+  padding-bottom: 10dvh;
+}
+#cartEmpty svg {
+  width: clamp(48px,8vw,64px);
+  height: clamp(48px,8vw,64px);
+  stroke: white;
+}
+#cartEmpty p {
+  font-family: YujiSyuku;
+  font-size: clamp(15px,2.2vw,20px);
+  color: white;
+  letter-spacing: 2px;
+}
+
+/* footer con total + botón pago */
+#cartFooter {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  padding: clamp(14px,2.5dvh,24px) clamp(20px,5vw,50px) clamp(24px,5dvh,48px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px,2dvh,18px);
+  border-top: 1px solid rgba(255,255,255,.1);
+  background: rgba(0,0,0,.25);
+}
+#cartFooterTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: white;
+}
+#cartFooterLabel {
+  font-family: YujiSyuku;
+  font-size: clamp(13px,1.8vw,18px);
+  letter-spacing: 3px;
+  opacity: .6;
+}
+#cartFooterPrice {
+  font-family: jost;
+  font-weight: bold;
+  font-size: clamp(24px,4.5vw,40px);
+}
+#cartCheckout {
+  background: white;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 100%;
+  font-size: clamp(13px,2.5vw,22px);
+}
+#cartCheckout .productState {
+  width: 100%;
+  text-align: center;
+  border-radius: 18px;
+}
+
+/* estado abierto */
+#cartSheet.open { pointer-events: auto; }
+#cartSheet.open #cartBackdrop { opacity: 1; }
+#cartSheet.open #cartPanel    { transform: translateY(0); }
+
 </style>
 </head>
 
@@ -479,6 +800,45 @@ body.uiVisible #scrollIndication {
   </div>
 </div>
 
+<!-- ── HOJA DEL CARRITO ── -->
+<div id="cartSheet">
+  <div id="cartBackdrop"></div>
+  <div id="cartPanel">
+
+    <div id="cartPanelHeader">
+      <p id="cartPanelTitle">Tu pedido</p>
+      <button id="cartClose" aria-label="Cerrar carrito">✕</button>
+    </div>
+
+    <div id="cartBG"></div>
+
+    <div id="cartItemsScroll">
+      <!-- se inyecta con renderCart() -->
+    </div>
+
+    <div id="cartFooter">
+      <div id="cartFooterTotal">
+        <span id="cartFooterLabel">TOTAL</span>
+        <span id="cartFooterPrice">0,00€</span>
+      </div>
+      <button id="cartCheckout">
+        <span class="productState">REALIZAR EL PAGO</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── CARRITO FAB ── -->
+<button id="cartFAB" aria-label="Ver carrito">
+  <svg id="cartIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+  </svg>
+  <span id="cartBadge">0</span>
+  <!--<span id="cartTotal"></span>-->
+</button>
 
 <div class="container">
   <div class="section s1">
@@ -493,22 +853,29 @@ body.uiVisible #scrollIndication {
 /* ── DATOS ── */
 const ramenData = [
   {
+    id: "ramen_curry",
     name: "CURRY RAMEN",
     background: "./img/ramenBG.png",
     image: "./img/ramenCurry.png",
-    description: "Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada. Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas y medio huevo marinado con la yema cremosa.",
+    description: "...",
     allergens: ["GLUTEN", "SOJA", "HUEVO"],
     price: 13
   },
   {
+    id: "ramen_spicy_miso",
     name: "SPICY MISO RAMEN",
     background: "./img/ramenBG.png",
     image: "./img/ramenCurry.png",
-    description: "Ramen de miso picante con un caldo intenso, toque de chile fermentado, ajo y miso rojo. Acompañado de cerdo chashu, brotes de bambú y cebolla fresca.",
+    description: "...",
     allergens: ["GLUTEN", "SOJA"],
     price: 14
   }
 ]
+
+
+const order = []
+let selectedRamenID = null
+
 
 /* ── ESTADO ── */
 const container       = document.querySelector('.container')
@@ -544,7 +911,7 @@ function render() {
             <p class="allergyTXT">${a}</p>
           </span>`).join('')}
       </div>
-      <div class="addProductButton">
+      <div class="addProductButton" data-ramen-id="${ramen.id}">
         <span class="productState">AÑADIR AL PEDIDO</span>
         <span class="productPrice">${ramen.price}€</span>
       </div>`
@@ -565,6 +932,7 @@ function goTo(newIndex) {
 document.addEventListener('click', e => {
   if (!introFinished) return
   if (extrasOpen()) return
+  if (cartOpen()) return           // ← añadir esta línea
   if (e.target.closest('.addProductButton')) return
   goTo(index + (e.clientX > window.innerWidth / 2 ? 1 : -1))
 })
@@ -575,6 +943,7 @@ document.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, 
 document.addEventListener('touchend', e => {
   if (!introFinished) return
   if (extrasOpen()) return
+  if (cartOpen()) return           // ← añadir esta línea
   const diff = startX - e.changedTouches[0].clientX
   if (Math.abs(diff) > 50) goTo(index + (diff > 0 ? 1 : -1))
 })
@@ -636,19 +1005,19 @@ goTo(0)
 /* Datos de complementos (iguales para todos los ramens) */
 const extrasData = [
   {
-    category: "🍹 Bebidas",
+    category: "drinks",
     items: [
-      { name: "Ramune",        price: 3,   img: "./img/ramenCurry.png" },
-      { name: "Té matcha",     price: 2.5, img: "./img/ramenCurry.png" },
-      { name: "Cerveza Sapporo", price: 3.5, img: "./img/ramenCurry.png" },
+      { id:"ramune", name:"Ramune", price:3, img:"./img/ramenCurry.png" },
+      { id:"matcha", name:"Té matcha", price:2.5, img:"./img/ramenCurry.png" },
+      { id:"sapporo", name:"Cerveza Sapporo", price:3.5, img:"./img/ramenCurry.png" }
     ]
   },
   {
-    category: "🍮 Postres",
+    category: "desserts",
     items: [
-      { name: "Mochi de fresa",   price: 3,   img: "./img/ramenCurry.png" },
-      { name: "Dorayaki",         price: 2.5, img: "./img/ramenCurry.png" },
-      { name: "Pudding de tofu",  price: 3,   img: "./img/ramenCurry.png" },
+      { id:"mochi", name:"Mochi de fresa", price:3, img:"./img/ramenCurry.png" },
+      { id:"dorayaki", name:"Dorayaki", price:2.5, img:"./img/ramenCurry.png" },
+      { id:"tofu_pudding", name:"Pudding de tofu", price:3, img:"./img/ramenCurry.png" }
     ]
   }
 ]
@@ -666,8 +1035,9 @@ extrasData.forEach(({ category, items }) => {
   extrasContent.appendChild(catEl)
 
   items.forEach(item => {
-    const row = document.createElement('div')
-    row.className = 'extraItem'
+    const row = document.createElement('div');
+    row.className = 'extraItem';
+    row.dataset.extraId = item.id;
     row.innerHTML = `
       <div class="extraLeft">
         <img src= "${item.img}" class="extraIMG">
@@ -708,15 +1078,256 @@ function closeExtras() {
 
 // Cerrar al pulsar el backdrop o el botón de confirmar
 extrasBackdrop.addEventListener('click', closeExtras)
-extrasConfirm.addEventListener('click',  closeExtras)
+extrasConfirm.addEventListener('click', () => {
+
+  const selectedExtras = [...document.querySelectorAll('.extraItem.selected')]
+    .map(el => el.dataset.extraId)
+    .sort()   // ordenar para que la comparación de merge sea fiable
+
+  // ── Lógica de merge inteligente ──
+  const existingIdx = order.findIndex(item =>
+    item.ramen_id === selectedRamenID &&
+    JSON.stringify([...item.extras].sort()) === JSON.stringify(selectedExtras)
+  )
+
+  if (existingIdx !== -1) {
+    // Mismo ramen + mismos extras → aumentar qty
+    order[existingIdx].qty++
+  } else {
+    // Nueva combinación → nueva línea
+    order.push({
+      ramen_id: selectedRamenID,
+      extras:   selectedExtras,
+      qty:      1,
+      timestamp: Date.now()
+    })
+  }
+
+  updateFAB()
+  bumpFAB()
+
+  console.clear()
+  console.log('🧾 PEDIDO ACTUAL:', JSON.stringify(order, null, 2))
+
+  closeExtras()
+
+  // Auto-abrir el carrito solo la primera vez
+  if (cartFirstOpen) {
+    cartFirstOpen = false
+  }
+})
 
 // Abrir al pulsar cualquier addProductButton
 document.addEventListener('click', e => {
   const btn = e.target.closest('.addProductButton')
-  if (btn) { e.stopPropagation(); openExtras() }
+  if (!btn) return
+
+  e.stopPropagation()
+
+  // 🔥 guardamos qué ramen se está pidiendo
+  selectedRamenID = btn.dataset.ramenId
+
+  openExtras()
 })
 
 function extrasOpen() { return extrasSheet.classList.contains('open') }
+
+/* ══════════════════════════════════════════
+   FAB DEL CARRITO
+   ══════════════════════════════════════════ */
+
+const cartFAB    = document.getElementById('cartFAB')
+const cartBadge  = document.getElementById('cartBadge')
+const cartTotal  = document.getElementById('cartTotal')
+
+/* ── Resuelve el precio de un item de order[] ── */
+function calcItemPrice(item) {
+  // Busca el ramen por ID — NUNCA usa precios guardados en order
+  const ramen = ramenData.find(r => r.id === item.ramen_id)
+  if (!ramen) return 0
+
+  const extrasPrice = item.extras.reduce((sum, extraId) => {
+    // Busca el extra en todas las categorías
+    for (const cat of extrasData) {
+      const found = cat.items.find(e => e.id === extraId)
+      if (found) return sum + found.price
+    }
+    return sum
+  }, 0)
+
+  return (ramen.price + extrasPrice) * item.qty
+}
+
+/* ── Calcula el total de todo el pedido ── */
+function calcOrderTotal() {
+  return order.reduce((sum, item) => sum + calcItemPrice(item), 0)
+}
+
+/* ── Actualiza el FAB (badge + precio + visibilidad) ── */
+function updateFAB() {
+  const totalQty   = order.reduce((sum, item) => sum + item.qty, 0)
+  const totalPrice = calcOrderTotal()
+
+  cartBadge.textContent = totalQty
+  //cartTotal.textContent = totalPrice.toFixed(2).replace('.', ',') + '€'
+
+  const shouldShow = totalQty > 0
+  cartFAB.classList.toggle('visible', shouldShow)
+}
+
+/* ── Bump de feedback al añadir ── */
+function bumpFAB() {
+  cartFAB.classList.remove('bump')
+  void cartFAB.offsetWidth  // fuerza reflow para reiniciar la animación
+  cartFAB.classList.add('bump')
+}
+
+
+/* ══════════════════════════════════════════
+   HOJA DEL CARRITO
+   ══════════════════════════════════════════ */
+
+const cartSheet        = document.getElementById('cartSheet')
+const cartBackdrop     = document.getElementById('cartBackdrop')
+const cartItemsScroll  = document.getElementById('cartItemsScroll')
+const cartFooterPrice  = document.getElementById('cartFooterPrice')
+const cartClose        = document.getElementById('cartClose')
+let cartFirstOpen      = true   // controla si es la primera vez que se añade
+
+/* ── Resuelve el nombre legible de un extra desde su ID ── */
+function resolveExtraName(extraId) {
+  for (const cat of extrasData) {
+    const found = cat.items.find(e => e.id === extraId)
+    if (found) return found.name
+  }
+  return extraId   // fallback: devuelve el ID si no lo encuentra
+}
+
+/* ── Resuelve la imagen de un ramen desde su ID ── */
+function resolveRamenImg(ramenId) {
+  const ramen = ramenData.find(r => r.id === ramenId)
+  return ramen ? ramen.image : ''
+}
+
+/* ── Resuelve el nombre de un ramen desde su ID ── */
+function resolveRamenName(ramenId) {
+  const ramen = ramenData.find(r => r.id === ramenId)
+  return ramen ? ramen.name : ramenId
+}
+
+/* ── Renderiza el contenido del carrito desde order[] ── */
+function renderCart() {
+  cartItemsScroll.innerHTML = ''
+
+  if (order.length === 0) {
+    // Estado vacío
+    cartItemsScroll.innerHTML = `
+      <div id="cartEmpty">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <p>carrito vacío</p>
+      </div>`
+
+    cartFooterPrice.textContent = '0,00€'
+    return
+  }
+
+  order.forEach((item, idx) => {
+    const ramenName   = resolveRamenName(item.ramen_id)
+    const ramenImg    = resolveRamenImg(item.ramen_id)
+    const extrasLabel = item.extras.length
+  ? item.extras.map(resolveExtraName).map(name => `<span>${name}</span>`).join('')
+  : '<span>sin extras</span>'
+
+    // Precio unitario (sin qty) para mostrar en la línea
+    const unitPrice = calcItemPrice({ ...item, qty: 1 })
+    const linePrice = calcItemPrice(item)
+
+    const el = document.createElement('div')
+    el.className = 'cartItem'
+    el.dataset.orderIdx = idx
+
+    el.innerHTML = `
+      <img class="cartItemImg" src="${ramenImg}" alt="${ramenName}">
+      <div class="cartItemInfo">
+        <p class="cartItemName">${ramenName}</p>
+        <p class="cartItemExtras">${extrasLabel}</p>
+        <p class="cartItemPrice">${linePrice.toFixed(2).replace('.',',')}€</p>
+      </div>
+      <button class="cartItemDelete" aria-label="Eliminar ${ramenName}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4h6v2"/>
+        </svg>
+      </button>`
+
+    // Listener del cubo de basura
+    el.querySelector('.cartItemDelete').addEventListener('click', e => {
+      e.stopPropagation()
+      removeCartItem(el, idx)
+    })
+
+    cartItemsScroll.appendChild(el)
+  })
+
+  // Actualizar total en el footer
+  cartFooterPrice.textContent = calcOrderTotal().toFixed(2).replace('.', ',') + '€'
+}
+
+/* ── Elimina un item del array y del DOM con animación ── */
+function removeCartItem(el, idx) {
+  // 1. Animación de salida
+  el.classList.add('removing')
+
+  // 2. Tras la animación: borrar del array y re-renderizar
+  el.addEventListener('transitionend', () => {
+    order.splice(idx, 1)
+    renderCart()      // re-renderiza para actualizar índices
+    updateFAB()       // sincroniza el badge y el precio del FAB
+
+    // Si el carrito queda vacío: cerrar automáticamente después de un momento
+    if (order.length === 0) {
+      setTimeout(closeCart, 400)
+      cartFirstOpen = true    // reset para que la próxima vez vuelva a auto-abrir
+    }
+  }, { once: true })
+}
+
+/* ── Abrir / cerrar el carrito ── */
+function openCart() {
+  renderCart()
+  cartSheet.classList.add('open')
+}
+
+function closeCart() {
+  cartSheet.classList.remove('open')
+  introFinished = false
+  setTimeout(() => { introFinished = true }, 100)
+}
+
+function cartOpen() { return cartSheet.classList.contains('open') }
+
+/* ── Listeners ── */
+cartBackdrop.addEventListener('click', closeCart)
+cartClose.addEventListener('click', closeCart)
+
+document.getElementById('cartCheckout').addEventListener('click', () => {
+  // Aquí conectarás con el backend
+  console.log('💳 ENVIANDO PEDIDO:', JSON.stringify(order, null, 2))
+  // TODO: fetch('/api/orders', { method: 'POST', body: JSON.stringify(order) })
+})
+
+// Abrir al pulsar el FAB
+cartFAB.addEventListener('click', e => {
+  e.stopPropagation()
+  openCart()
+})
 
 
 </script>
