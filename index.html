@@ -952,7 +952,7 @@ function render() {
   })
 }
 
-const slideSound = new Audio('./sound/swipe.wav')  // cambia el nombre al tuyo
+const slideSound = new Audio('./sound/swipe.WAV')  // cambia el nombre al tuyo
 slideSound.volume = 0.2
 
 /* ── NAVEGAR AL SLIDE index ── */
@@ -1063,7 +1063,7 @@ const extrasSheet   = document.getElementById('extrasSheet')
 const extrasContent = document.getElementById('extrasContent')
 const extrasConfirm = document.getElementById('extrasConfirm')
 const extrasBackdrop = document.getElementById('extrasBackdrop')
-const extrasSelectedSound = new Audio('./sound/extraSelected.wav')
+const extrasSelectedSound = new Audio('./sound/extraSelected.WAV')
 extrasSelectedSound.volume = 0.5
 
 /* Construir el contenido de la hoja una sola vez */
@@ -1097,7 +1097,7 @@ extrasData.forEach(({ category, items }) => {
   })
 })
 
-const extrasSound = new Audio('./sound/extras.wav')
+const extrasSound = new Audio('./sound/extras.WAV')
 extrasSound.volume = 0.4
 
 /* Abrir la hoja */
@@ -1217,7 +1217,7 @@ function updateFAB() {
 }
 
 
-const fabSound = new Audio('./sound/fabUpdate.wav')
+const fabSound = new Audio('./sound/fabUpdate.WAV')
 fabSound.volume = 0.5
 
 /* ── Bump de feedback al añadir ── */
@@ -1352,7 +1352,7 @@ function removeCartItem(el, idx) {
 }
 
 
-const cartSound = new Audio('./sound/cart.wav')
+const cartSound = new Audio('./sound/cart.WAV')
 cartSound.volume = 0.7
 
 
