@@ -170,7 +170,7 @@ body.uiVisible #scrollIndication {
   gap: clamp(14px, 3vw, 30px);
   margin-top: clamp(12px, 3dvh, 30px);
 }
-.allergy { display: flex; align-items: center; gap: 10px; }
+.allergy { display: flex; align-items: center; gap: 5px; }
 .allergyIMG { width: clamp(26px, 5vw, 55px); }
 .allergyTXT { font-size: clamp(10px, 1.4vw, 14px);font-family: jost; font-weight: 400 }
 
@@ -180,7 +180,7 @@ body.uiVisible #scrollIndication {
   left: 50%; transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: clamp(12px, 2vw, 22px);
+  gap: clamp(30px, 4vw, 44px);
   background: white;
   border-radius: 18px;
   font-size: clamp(10px, 2.5vw, 28px);
@@ -858,16 +858,25 @@ const ramenData = [
     background: "./img/ramenBG.png",
     image: "./img/ramenCurry.png",
     description: "Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada. Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas y medio huevo marinado con la yema cremosa.",
-    allergens: ["GLUTEN", "SOJA", "HUEVO"],
+    allergens: [
+      { name: "GLUTEN", img: "./img/gluten.png" },
+      { name: "SOJA",   img: "./img/gluten.png" },
+      { name: "HUEVO",  img: "./img/gluten.png" }
+    ],
     price: 13
   },
   {
     id: "ramen_spicy_miso",
     name: "SPICY MISO RAMEN",
     background: "./img/ramenBG.png",
-    image: "./img/ramenCurry.png",
+    image: "./img/ramenMiso.png",
     description: "Un ramen de curry con caldo espeso y aromático, lleno de especias suaves y notas dulces de cebolla caramelizada. Los fideos salen brillantes y bien cubiertos, acompañados de pollo crujiente o tofu dorado, verduras tiernas y medio huevo marinado con la yema cremosa.",
-    allergens: ["GLUTEN", "SOJA"],
+    allergens: [
+      { name: "GLUTEN", img: "./img/gluten.png" },
+      { name: "SOJA",   img: "./img/gluten.png" },
+      { name: "HUEVO",  img: "./img/gluten.png" },
+      { name: "SOJA",   img: "./img/gluten.png" }
+    ],
     price: 14
   }
 ]
@@ -907,8 +916,8 @@ function render() {
       <div class="allergies">
         ${ramen.allergens.map(a => `
           <span class="allergy">
-            <img class="allergyIMG" src="${ramen.image}" alt="${a}">
-            <p class="allergyTXT">${a}</p>
+            <img class="allergyIMG" src="${a.img}" alt="${a.name}">
+            <p class="allergyTXT">${a.name}</p>
           </span>`).join('')}
       </div>
       <div class="addProductButton" data-ramen-id="${ramen.id}">
@@ -1004,20 +1013,18 @@ goTo(0)
 
 /* Datos de complementos (iguales para todos los ramens) */
 const extrasData = [
+
   {
-    category: "drinks",
+    category: "Complementos",
     items: [
-      { id:"ramune", name:"Ramune", price:3, img:"./img/ramenCurry.png" },
-      { id:"matcha", name:"Té matcha", price:2.5, img:"./img/ramenCurry.png" },
-      { id:"sapporo", name:"Cerveza Sapporo", price:3.5, img:"./img/ramenCurry.png" }
+      { id:"croqueta", name:"Croqueta", price:2, img:"./img/croqueta.png" },
+      { id:"dorayaki", name:"Dorayaki", price:2.5, img:"./img/dorayaki.png" }
     ]
   },
   {
-    category: "desserts",
+    category: "Bebidas",
     items: [
-      { id:"mochi", name:"Mochi de fresa", price:3, img:"./img/ramenCurry.png" },
-      { id:"dorayaki", name:"Dorayaki", price:2.5, img:"./img/ramenCurry.png" },
-      { id:"tofu_pudding", name:"Pudding de tofu", price:3, img:"./img/ramenCurry.png" }
+      { id:"matcha", name:"Té matcha", price:2.5, img:"./img/matcha.png" }
     ]
   }
 ]
