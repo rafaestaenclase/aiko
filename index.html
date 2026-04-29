@@ -940,7 +940,7 @@ function render() {
     const section = document.createElement('div')
     section.className = 'section'
     section.style.backgroundImage = `
-      radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.75)),
+      linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 69%),
       url(${ramen.background})`
 
     section.innerHTML = `
@@ -1401,6 +1401,12 @@ cartFAB.addEventListener('click', e => {
   openCart()
 })
 
+
+
+
+fetch("https://aikorest.free.nf/api.php")
+  .then(res => res.json())
+  .then(data => console.log(data))
 
 </script>
 </body>
