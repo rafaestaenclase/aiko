@@ -785,6 +785,17 @@ body.uiVisible #scrollIndication {
   75%       { opacity: 0.4; }
 }
 
+.cartItemQty {
+  background: #d22728;
+  color: white;
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: clamp(10px,1.4vw,13px);
+  font-weight: bold;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
 </style>
 </head>
 
@@ -1305,7 +1316,10 @@ function renderCart() {
     el.innerHTML = `
       <img class="cartItemImg" src="${ramenImg}" alt="${ramenName}">
       <div class="cartItemInfo">
-        <p class="cartItemName">${ramenName}</p>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <p class="cartItemName">${ramenName}</p>
+          ${item.qty > 1 ? `<span class="cartItemQty">×${item.qty}</span>` : ''}
+        </div>
         <p class="cartItemExtras">${extrasLabel}</p>
         <p class="cartItemPrice">${linePrice.toFixed(2).replace('.',',')}€</p>
       </div>
